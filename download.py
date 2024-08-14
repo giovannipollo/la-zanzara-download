@@ -27,7 +27,7 @@ def download_year(year):
             if not os.path.exists(filename):
                 # Get the status code
                 r = requests.head(url)
-                if r.status_code == 200:
+                if r.status_code == 200 or r.status_code == 302:
                     # Download the episode
                     r = requests.get(url, stream=True)
                     # check header to get content length, in bytes
@@ -73,7 +73,7 @@ def download_month(year, month):
         if not os.path.exists(filename):
             # Get the status code
             r = requests.head(url)
-            if r.status_code == 200:
+            if r.status_code == 200 or r.status_code == 302:
                 # Download the episode
                 r = requests.get(url, stream=True)
                 # check header to get content length, in bytes
@@ -117,7 +117,7 @@ def download_day(year, month, day):
     if not os.path.exists(filename):
         # Get the status code
         r = requests.head(url)
-        if r.status_code == 200:
+        if r.status_code == 200 or r.status_code == 302:
             # Download the episode
             r = requests.get(url, stream=True)
             # check header to get content length, in bytes
@@ -134,6 +134,7 @@ def download_day(year, month, day):
         else:
             # Print the status
             print("Status code: {} \t Episode {} not available!".format(r.status_code, filename))
+            return
             # Wat 60 seconds before the next request
             # time.sleep(10)
     else:
@@ -151,8 +152,12 @@ if __name__ == "__main__":
     parser.add_argument("--month", type=int, default=None, help="Month of the episodes to download")
     parser.add_argument("--day", type=int, default=None, help="Day of the episode to download")
     
+        
     # Parse the arguments
     args = parser.parse_args()
+    # Create the directory
+    if args.year != None:
+        os.makedirs(str(args.year), exist_ok=True)
     if args.year != None and args.month == None and args.day == None:
         download_year(year=args.year)
     elif args.year != None and args.month != None and args.day == None:
